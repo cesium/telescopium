@@ -1,0 +1,20 @@
+[project]
+name = "uminho-schedule-tool"
+version = "0.1.0"
+description = "Scrapes schedules from UMinho website and exports them to any available format"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "beautifulsoup4>=4.14.2",
+    "ics>=0.7.2",
+    "lxml>=6.0.2",
+    "progress>=1.6.1",
+    "pyyaml>=6.0.3",
+    "requests>=2.32.5",
+    "tatsu<5.8",
+]
+
+[project.optional-dependencies]
+ics = [
+    "ics>=0.7.2",
+]
