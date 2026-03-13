@@ -2,7 +2,7 @@ scraper:
   timeout: 1 # Seconds before fetching next week's schedule
   #course_name: "Mestrado em Computação Avançada"
   course_name: "Licenciatura em Engenharia Informática"
-  year: 1
+  year: [1] # ex. [1, 2, 3]
   week:
     start: "2026-09-15"
     end: "2026-10-01"

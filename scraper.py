@@ -18,7 +18,7 @@ TIME_SLOT_SIZE_PX = 60
 
 class Scraper:
     course_name = None
-    year = ""
+    years = None
     form_id = None
     plan_name = None
 
@@ -31,7 +31,9 @@ class Scraper:
             self.classes = config["classes"]
 
         self.course_name = config["course_name"]
-        self.year = str(config["year"])
+        year_config = config["year"]
+        self.years = [str(year) for year in year_config]
+
 
         res = requests.get(SCHEDULE_URL)
         soup = BeautifulSoup(res.text, features="lxml")
@@ -75,31 +77,32 @@ class Scraper:
 
         soup = BeautifulSoup(res.text, features="lxml")
 
-        for i, week in enumerate(weeks):
-            state = f'{{"enabled":true,"emptyMessage":"","validationText":"{week}-00-00-00","valueAsString":"{week}-00-00-00","minDateStr":"2025-09-15-00-00-00","maxDateStr":"2026-06-21-00-00-00","lastSetTextBoxValue":"20-10-2025"}}'
+        for year in self.years:
+            for i, week in enumerate(weeks):
+                state = f'{{"enabled":true,"emptyMessage":"","validationText":"{week}-00-00-00","valueAsString":"{week}-00-00-00","minDateStr":"2025-09-15-00-00-00","maxDateStr":"2026-06-21-00-00-00","lastSetTextBoxValue":"20-10-2025"}}'
 
-            plan_fields = {}
-            if self.plan_name:
-                plan_fields[f"{self.form_id}dataPlano"] = self.plan_name
+                plan_fields = {}
+                if self.plan_name:
+                    plan_fields[f"{self.form_id}dataPlano"] = self.plan_name
 
-            res = requests.post(SCHEDULE_URL, headers={
-                "Content-Type": "application/x-www-form-urlencoded",
-                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
-            }, data={
-                **self.parse_hidden_inputs(soup),
-                **plan_fields,
-                f"{self.form_id}dataCurso": self.course_name,
-                f"{self.form_id}dataAnoCurricular": self.year,
-                f"{self.form_id}dataWeekSelect": week,
-                f"{self.form_id}dataWeekSelect$dateInput": "-".join(reversed(week.split("-"))),
-                f"{self.form_id}chkMostraExpandido": "on",
-                f"{self.form_id.replace('$', '_')}dataWeekSelect_dateInput_ClientState": state
-            })
+                res = requests.post(SCHEDULE_URL, headers={
+                    "Content-Type": "application/x-www-form-urlencoded",
+                    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0"
+                }, data={
+                    **self.parse_hidden_inputs(soup),
+                    **plan_fields,
+                    f"{self.form_id}dataCurso": self.course_name,
+                    f"{self.form_id}dataAnoCurricular": year,
+                    f"{self.form_id}dataWeekSelect": week,
+                    f"{self.form_id}dataWeekSelect$dateInput": "-".join(reversed(week.split("-"))),
+                    f"{self.form_id}chkMostraExpandido": "on",
+                    f"{self.form_id.replace('$', '_')}dataWeekSelect_dateInput_ClientState": state
+                })
 
-            self.parse_schedule(res.text)
+                self.parse_schedule(res.text)
 
-            if i != len(weeks) - 1:
-                sleep(config["timeout"])
+                if i != len(weeks) - 1 or year != self.years[-1]:
+                    sleep(config["timeout"])
 
 
     def parse_schedule(self, raw_schedule_data: str):
