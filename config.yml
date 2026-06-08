@@ -4,8 +4,8 @@ scraper:
   course_name: "Licenciatura em Engenharia Informática"
   year: [1] # ex. [1, 2, 3]
   week:
-    start: "2026-09-15"
-    end: "2026-10-01"
+    start: "27-04-2026"
+    end: "04-05-2026"
   #classes:
     #- "Sistemas e Arquiteturas de Computadores"
     #- "Ferramentas de Computação de Elevado Desempenho"

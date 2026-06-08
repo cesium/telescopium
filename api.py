@@ -13,17 +13,42 @@ import uvicorn
 import json
 import uuid
 
+DEFAULT_COURSE_NAME = "Licenciatura em Engenharia Informática"
+
 
 class Week(BaseModel):
-    start: str
-    end: str
+    start: str | None = None
+    end: str | None = None
 
 
 class ScheduleRequest(BaseModel):
-    timeout: int
-    course_name: str
-    year: list[int]
-    week: Week
+    timeout: int = 1
+    course: str = DEFAULT_COURSE_NAME
+    years: list[int] | None = None
+    week: Week | None = None
+    classes: list[str] | None = None
+
+    def to_scraper_config(self) -> dict:
+        today = datetime.date.today()
+        week = self.week or Week()
+        start = week.start or today.isoformat()
+        end = week.end or (today + datetime.timedelta(days=14)).isoformat()
+        years = self.years or [1, 2, 3]
+
+        config = {
+            "timeout": self.timeout,
+            "course_name": self.course,
+            "year": years,
+            "week": {
+                "start": start,
+                "end": end,
+            },
+        }
+
+        if self.classes is not None:
+            config["classes"] = self.classes
+
+        return config
 
 
 class Job:
@@ -48,15 +73,7 @@ class Job:
 
     def run(self, config: dict | None = None):
         if config is None:
-            config = {
-                "timeout": 1,
-                "course_name": "Licenciatura em Engenharia Informática",
-                "year": [1, 2, 3],
-                "week": {
-                    "start": "2026-09-15",
-                    "end": "2026-10-01",
-                },
-            }
+            config = ScheduleRequest().to_scraper_config()
 
         self.status = "running"
         try:
@@ -92,8 +109,12 @@ class API:
     async def __run_scraper(self, request):
         try:
             body = await request.body()
-            payload = json.loads(body) if body else None
-            data = ScheduleRequest.model_validate(payload) if payload else None
+            payload = json.loads(body) if body else {}
+            if "course_name" in payload and "course" not in payload:
+                payload["course"] = payload["course_name"]
+            if "year" in payload and "years" not in payload:
+                payload["years"] = payload["year"]
+            data = ScheduleRequest.model_validate(payload)
         except (json.JSONDecodeError, ValidationError) as e:
             return JSONResponse({"error": str(e)}, status_code=422)
 
@@ -101,7 +122,7 @@ class API:
             job_id = uuid.uuid4()
             job = Job(job_id)
             self.__jobs[job_id] = job
-            self.__executor.submit(job.run, data.model_dump() if data else None)
+            self.__executor.submit(job.run, data.to_scraper_config())
 
             return JSONResponse({"job_id": str(job_id)})
 
