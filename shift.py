@@ -1,15 +1,39 @@
 import datetime
 import uuid
 
+SHIFT_NAMESPACE = uuid.uuid5(uuid.NAMESPACE_DNS, "telescopium.shift")
+
 
 class Shift:
     def __init__(self):
-        self.id = uuid.uuid4()
         self.name = ""
         self.location = ""
         self.shift = ""
         self.start: None | datetime.datetime = None
         self.end: None | datetime.datetime = None
+
+    @property
+    def id(self):
+        return uuid.uuid5(SHIFT_NAMESPACE, self.uuid_name)
+
+    @property
+    def uuid_name(self):
+        return "|".join(
+            [
+                self.name,
+                self.location,
+                self.shift,
+                self.format_datetime(self.start) or "",
+                self.format_datetime(self.end) or "",
+            ]
+        )
+
+    @staticmethod
+    def format_datetime(value: None | datetime.datetime):
+        if value is None:
+            return None
+
+        return value.strftime("%Y-%m-%d %H:%M:%S")
 
     def __str__(self):
         return (
@@ -26,6 +50,6 @@ class Shift:
             "name": self.name,
             "location": self.location,
             "shift": self.shift,
-            "start": self.start.strftime("%Y-%m-%d %H:%M:%S"),
-            "end": self.end.strftime("%Y-%m-%d %H:%M:%S"),
+            "start": self.format_datetime(self.start),
+            "end": self.format_datetime(self.end),
         }
