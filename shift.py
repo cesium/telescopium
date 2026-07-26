@@ -21,7 +21,6 @@ class Shift:
         return "|".join(
             [
                 self.name,
-                self.location,
                 self.shift,
                 self.format_datetime(self.start) or "",
                 self.format_datetime(self.end) or "",
@@ -50,6 +49,6 @@ class Shift:
             "name": self.name,
             "location": self.location,
             "shift": self.shift,
-            "start": self.format_datetime(self.start),
-            "end": self.format_datetime(self.end),
+            "start_time": self.format_datetime(self.start),
+            "end_time": self.format_datetime(self.end),
         }
