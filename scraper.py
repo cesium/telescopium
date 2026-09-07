@@ -7,10 +7,19 @@ import json
 import bs4
 import requests
 from bs4 import BeautifulSoup
+from urllib3 import disable_warnings
+from urllib3.exceptions import InsecureRequestWarning
 
 from shift import Shift
 
 SCHEDULE_URL = "https://alunos.uminho.pt/PT/estudantes/Paginas/InfoUteisHorarios.aspx"
+# The upstream server currently omits its intermediate certificate. Re-enable TLS
+# verification as soon as its certificate chain is fixed.
+VERIFY_TLS = False
+
+if not VERIFY_TLS:
+    disable_warnings(InsecureRequestWarning)
+
 STATE = lambda course, course_id: (
     f'{{"logEntries":[],"value":"{course_id}","text":"{course}","enabled":true,'
     f'"checkedIndices":[],"checkedItemsTextOverflows":false}}'
@@ -35,12 +44,13 @@ class Scraper:
         year_config = config["year"]
         self.years = [str(year) for year in year_config]
 
-        res = requests.get(SCHEDULE_URL)
+        res = requests.get(SCHEDULE_URL, verify=VERIFY_TLS)
         soup = BeautifulSoup(res.text, features="lxml")
         self.form_id = self.get_form_id(soup)
 
         res = requests.post(
             SCHEDULE_URL,
+            verify=VERIFY_TLS,
             headers={"Content-Type": "application/x-www-form-urlencoded"},
             data={
                 **self.parse_hidden_inputs(soup),
@@ -65,6 +75,7 @@ class Scraper:
 
                 res = requests.post(
                     SCHEDULE_URL,
+                    verify=VERIFY_TLS,
                     headers={"Content-Type": "application/x-www-form-urlencoded"},
                     data={
                         **self.parse_hidden_inputs(plan_soup),
@@ -96,6 +107,7 @@ class Scraper:
 
                 res = requests.post(
                     SCHEDULE_URL,
+                    verify=VERIFY_TLS,
                     headers={
                         "Content-Type": "application/x-www-form-urlencoded",
                         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:143.0) Gecko/20100101 Firefox/143.0",
