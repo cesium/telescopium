@@ -309,7 +309,9 @@ class Scraper:
         metadata = slot.select_one(".rsAptOut > .rsAptMid > .rsAptIn > .rsAptContent")
         new_shift.name = metadata.contents[0].get_text(strip=True)
         new_shift.location = metadata.find("span").get_text(strip=True).strip("[]")
-        new_shift.shift = metadata.contents[3].get_text(strip=True)
+
+        shift = metadata.contents[3].get_text(strip=True)
+        new_shift.shift = shift if re.fullmatch(r"(?:T|TP|PL)\d+", shift) else None
 
         return new_shift
 

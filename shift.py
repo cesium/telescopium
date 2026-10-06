@@ -8,7 +8,7 @@ class Shift:
     def __init__(self):
         self.name = ""
         self.location = ""
-        self.shift = ""
+        self.shift: str | None = ""
         self.start: None | datetime.datetime = None
         self.end: None | datetime.datetime = None
 
@@ -21,7 +21,7 @@ class Shift:
         return "|".join(
             [
                 self.name,
-                self.shift,
+                self.shift or "",
                 self.format_datetime(self.start) or "",
                 self.format_datetime(self.end) or "",
             ]
