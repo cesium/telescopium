@@ -78,7 +78,12 @@ class Job:
         self.status = "running"
         try:
             scraper = Scraper(config)
-            self.result = [shift.to_dict() for shift in scraper.shifts]
+
+            unique_shifts = {}
+            for shift in scraper.shifts:
+                unique_shifts.setdefault(shift.id, shift)
+
+            self.result = [shift.to_dict() for shift in unique_shifts.values()]
             self.completed_at = datetime.datetime.now().replace(microsecond=0)
             self.status = "done"
         except Exception as e:
