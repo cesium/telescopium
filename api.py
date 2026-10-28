@@ -98,6 +98,7 @@ class API:
 
         self.__starlette = Starlette(
             routes=[
+                Route("/api/v1/health", self.__health, methods=["GET"]),
                 Route("/api/v1/scrape", self.__run_scraper, methods=["POST"]),
                 Route("/api/v1/shifts", self.__get_shifts, methods=["GET"]),
                 Route(
@@ -110,6 +111,9 @@ class API:
 
     def run(self, host: str, port: int) -> None:
         uvicorn.run(self.__starlette, host=host, port=port)
+
+    async def __health(self, request: Request):
+        return JSONResponse({"status": "ok"})
 
     async def __run_scraper(self, request):
         try:
