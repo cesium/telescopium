@@ -95,16 +95,3 @@ uv remove <package>
 ```
 
 Don't forget to commit the updated `pyproject.toml` and `uv.lock`.
-
-## 🔗 References
-
-You can use these resources to learn more about the technologies this project
-uses.
-
-- [uv Documentation](https://docs.astral.sh/uv/)
-- [Python Documentation](https://docs.python.org/3/)
-- [Beautiful Soup Documentation](https://www.crummy.com/software/BeautifulSoup/bs4/doc/)
-- [Requests Documentation](https://requests.readthedocs.io/)
-- [Pydantic Documentation](https://docs.pydantic.dev/)
-- [Starlette Documentation](https://www.starlette.io/)
-- [Uvicorn Documentation](https://www.uvicorn.org/)
