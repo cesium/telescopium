@@ -12,11 +12,6 @@ ENV UV_COMPILE_BYTECODE=1 \
 COPY pyproject.toml uv.lock ./
 RUN uv sync --locked --no-dev --no-install-project
 
-# Install curl for health check
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
-
 # Production image
 FROM python:3.13-slim-bookworm AS runner
 
@@ -25,7 +20,11 @@ WORKDIR /app
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1
 
-RUN useradd --system --uid 1001 telescopium
+# Install curl for the health check and create a non-root user
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/* \
+    && useradd --system --uid 1001 telescopium
 
 COPY --from=builder --chown=telescopium /app/.venv ./.venv
 COPY --chown=telescopium . .
