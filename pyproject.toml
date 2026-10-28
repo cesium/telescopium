@@ -1,13 +1,11 @@
 [project]
-name = "uminho-schedule-tool"
+name = "telescopium"
 version = "0.1.0"
-description = "Scrapes schedules from UMinho website and exports them to any available format"
+description = "Scrapes schedules from UMinho's website and exports or exposes collected data through the api"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "beautifulsoup4>=4.14.2",
-    "black>=26.3.0",
-    "ics>=0.7.2",
     "lxml>=6.0.2",
     "progress>=1.6.1",
     "pydantic>=2.12.5",
@@ -25,3 +23,8 @@ ics = [
 
 [tool.black]
 target-version = ["py313"]
+
+[dependency-groups]
+dev = [
+    "black>=26.3.0",
+]
