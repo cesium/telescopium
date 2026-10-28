@@ -1,3 +1,7 @@
+[contributing]: CONTRIBUTING.md
+[code_of_conduct]: CODE_OF_CONDUCT.md
+[license]: LICENSE
+
 # Telescopium
 
 Telescopium is the scraper used by [Pombo](https://pombo.di.uminho.pt/), CeSIUM's platform for LEI students at UMinho. It updates the classrooms of the classes Pombo already has, and is also used to cross-check that data.
