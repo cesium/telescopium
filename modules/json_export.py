@@ -3,6 +3,7 @@ import json
 from shift import Shift
 from modules.base import BaseExportModule
 
+
 class JsonExportModule(BaseExportModule):
     """
     The JSON export module supports the following config options:
@@ -21,6 +22,10 @@ class JsonExportModule(BaseExportModule):
     def export(self, shifts: list[Shift]):
         print("Exporting to JSON...")
         with open(f"./export/{self.file_name}", "w") as f:
-            f.write(json.dumps([shift.to_dict() for shift in shifts],
-                               ensure_ascii=False,
-                               indent=4 if self.indent else None))
+            f.write(
+                json.dumps(
+                    [shift.to_dict() for shift in shifts],
+                    ensure_ascii=False,
+                    indent=4 if self.indent else None,
+                )
+            )

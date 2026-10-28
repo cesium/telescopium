@@ -5,6 +5,7 @@ import ics
 from shift import Shift
 from modules.base import BaseExportModule
 
+
 class IcsExportModule(BaseExportModule):
     """
     The ICS export module supports the following config options:
